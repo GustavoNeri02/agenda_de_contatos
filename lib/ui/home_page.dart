@@ -19,7 +19,10 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     setState(() {
-      helper.getAllContacts().then((list) => {listContacts = list});
+      helper.getAllContacts().then((list) => {
+        listContacts = list,
+        listContacts.clear(),
+      });
     });
   }
 
@@ -61,6 +64,7 @@ class _HomePageState extends State<HomePage> {
                 width: 80,
                 height: 80,
                 decoration: BoxDecoration(
+                  border: Border.all(color: Colors.black, width: 4),
                   shape: BoxShape.circle,
                   image: DecorationImage(
                       image: listContacts[index].img != null
