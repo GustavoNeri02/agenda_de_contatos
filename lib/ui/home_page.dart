@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:agenda_de_contatos/helpers/contact_helper.dart';
+import 'package:agenda_de_contatos/ui/contact_page.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -13,18 +14,6 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   ContactHelper helper = ContactHelper();
   List<Contact> listContacts = [];
-
-  //teste
-  @override
-  void initState() {
-    super.initState();
-    setState(() {
-      helper.getAllContacts().then((list) => {
-        listContacts = list,
-        listContacts.clear(),
-      });
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +36,9 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () {
+          _showContactPage();
+        },
         child: Icon(Icons.add),
       ),
     );
@@ -89,6 +80,29 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
       ),
+      onTap: (){_showContactPage(contact: listContacts[index]);},
     );
+  }
+
+  void _showContactPage({Contact contact}) async{
+    final recContact = await Navigator.push(context,
+    MaterialPageRoute(builder: (context) => ContactPage(contact: contact,)));
+    if (recContact != null){
+      if(contact != null){
+        await helper.updateContact(contact);
+      }else{
+        await helper.saveContact(recContact);
+      }
+      _getAllContacts();
+    }
+  }
+
+  _getAllContacts(){
+      setState(() {
+        helper.getAllContacts().then((list) => {
+          listContacts = list,
+          //listContacts.clear(),
+        });
+      });
   }
 }

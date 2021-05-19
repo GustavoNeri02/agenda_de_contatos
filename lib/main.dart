@@ -7,6 +7,6 @@ import 'ui/contact_page.dart';
 void main() {
   return runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
-    home: ContactPage(),
+    home: HomePage(),
   ));
 }
