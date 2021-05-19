@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:agenda_de_contatos/helpers/contact_helper.dart';
 import 'package:agenda_de_contatos/ui/contact_page.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key key}) : super(key: key);
@@ -25,6 +26,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.teal,
         centerTitle: true,
         title: Text(
           "Contatos",
@@ -42,6 +44,7 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.teal,
         onPressed: () {
           _showContactPage();
         },
@@ -61,9 +64,9 @@ class _HomePageState extends State<HomePage> {
                 width: 80,
                 height: 80,
                 decoration: BoxDecoration(
-                  border: Border.all(color: Colors.black, width: 4),
                   shape: BoxShape.circle,
                   image: DecorationImage(
+                      fit: BoxFit.cover,
                       image: listContacts[index].img != null
                           ? FileImage(File(listContacts[index].img))
                           : AssetImage("images/person.png")),
@@ -101,14 +104,18 @@ class _HomePageState extends State<HomePage> {
               builder: (context) {
                 return Container(
                   padding: EdgeInsets.all(10),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisSize: MainAxisSize.max,
                     children: [
                       TextButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            launch("tel:${listContacts[index].phone}");
+                            Navigator.pop(context);
+                          },
                           child: Text(
-                            "ligar",
-                            style: TextStyle(color: Colors.red, fontSize: 20),
+                            "Ligar",
+                            style: TextStyle(color: Colors.teal, fontSize: 20),
                           )),
                       TextButton(
                           onPressed: () {
@@ -117,7 +124,7 @@ class _HomePageState extends State<HomePage> {
                           },
                           child: Text(
                             "Editar",
-                            style: TextStyle(color: Colors.red, fontSize: 20),
+                            style: TextStyle(color: Colors.teal, fontSize: 20),
                           )),
                       TextButton(
                           onPressed: () {

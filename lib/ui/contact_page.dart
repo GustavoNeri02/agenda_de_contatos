@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:agenda_de_contatos/helpers/contact_helper.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 class ContactPage extends StatefulWidget {
   final Contact contact;
@@ -42,26 +43,36 @@ class _ContactPageState extends State<ContactPage> {
       onWillPop: _requestPop,
       child: Scaffold(
         appBar: AppBar(
+          backgroundColor: Colors.teal,
           centerTitle: true,
           title: Text(_editedContact.name ?? "Novo Contato"),
         ),
         body: SingleChildScrollView(
+          padding: EdgeInsets.all(10),
           child: Column(
             children: [
-              SizedBox(
-                height: 10,
-              ),
               GestureDetector(
                 onTap: () {
-                  //foto
+                  ImagePicker()
+                      .getImage(source: ImageSource.gallery)
+                      .then((file) => {
+                            if (file != null)
+                              {
+                                setState(() {
+                                  _editedContact.img = file.path;
+                                }),
+                                _userEdited = true,
+                              }
+                          });
                 },
                 child: Container(
                   width: 140,
                   height: 140,
                   decoration: BoxDecoration(
-                    border: Border.all(color: Colors.black, width: 4),
+                    border: Border.all(color: Colors.black, width: 2),
                     shape: BoxShape.circle,
                     image: DecorationImage(
+                        fit: BoxFit.cover,
                         image: _editedContact.img != null
                             ? FileImage(File(_editedContact.img))
                             : AssetImage("images/person.png")),
@@ -101,6 +112,7 @@ class _ContactPageState extends State<ContactPage> {
           ),
         ),
         floatingActionButton: FloatingActionButton(
+          backgroundColor: Colors.teal,
           onPressed: () {
             if (_editedContact.name != null && _editedContact.name.isNotEmpty) {
               Navigator.pop(context, _editedContact);
