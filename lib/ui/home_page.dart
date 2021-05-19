@@ -87,9 +87,55 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
       onTap: () {
-        _showContactPage(contact: listContacts[index]);
+        _showOptions(context, index);
       },
     );
+  }
+
+  void _showOptions(BuildContext context, int index) {
+    showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return BottomSheet(
+              onClosing: () {},
+              builder: (context) {
+                return Container(
+                  padding: EdgeInsets.all(10),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      TextButton(
+                          onPressed: () {},
+                          child: Text(
+                            "ligar",
+                            style: TextStyle(color: Colors.red, fontSize: 20),
+                          )),
+                      TextButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                            _showContactPage(contact: listContacts[index]);
+                          },
+                          child: Text(
+                            "Editar",
+                            style: TextStyle(color: Colors.red, fontSize: 20),
+                          )),
+                      TextButton(
+                          onPressed: () {
+                            setState(() {
+                              helper.deleteContact(listContacts[index].id);
+                              listContacts.removeAt(index);
+                            });
+                            Navigator.pop(context);
+                          },
+                          child: Text(
+                            "Excluir",
+                            style: TextStyle(color: Colors.red, fontSize: 20),
+                          ))
+                    ],
+                  ),
+                );
+              });
+        });
   }
 
   void _showContactPage({Contact contact}) async {
