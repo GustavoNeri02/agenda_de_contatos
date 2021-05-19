@@ -16,6 +16,8 @@ class _ContactPageState extends State<ContactPage> {
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
 
+  final _nameFocus = FocusNode();
+
   bool _userEdited = false;
 
   Contact _editedContact;
@@ -36,67 +38,108 @@ class _ContactPageState extends State<ContactPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: Text(_editedContact.name ?? "Novo Contato"),
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            SizedBox(
-              height: 10,
-            ),
-            GestureDetector(
-              onTap: () {},
-              child: Container(
-                width: 140,
-                height: 140,
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.black, width: 4),
-                  shape: BoxShape.circle,
-                  image: DecorationImage(
-                      image: _editedContact.img != null
-                          ? FileImage(File(_editedContact.img))
-                          : AssetImage("images/person.png")),
+    return WillPopScope(
+      onWillPop: _requestPop,
+      child: Scaffold(
+        appBar: AppBar(
+          centerTitle: true,
+          title: Text(_editedContact.name ?? "Novo Contato"),
+        ),
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              SizedBox(
+                height: 10,
+              ),
+              GestureDetector(
+                onTap: () {
+                  //foto
+                },
+                child: Container(
+                  width: 140,
+                  height: 140,
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.black, width: 4),
+                    shape: BoxShape.circle,
+                    image: DecorationImage(
+                        image: _editedContact.img != null
+                            ? FileImage(File(_editedContact.img))
+                            : AssetImage("images/person.png")),
+                  ),
                 ),
               ),
-            ),
-            TextField(
-              controller: _nameController,
-              decoration: InputDecoration(labelText: "Nome"),
-              onChanged: (text) {
-                _userEdited = true;
-                setState(() {
-                  text == ""
-                      ? _editedContact.name = "Novo Contato"
-                      : _editedContact.name = text;
-                });
-              },
-            ),
-            TextField(
-                controller: _emailController,
-                decoration: InputDecoration(labelText: "email"),
-                keyboardType: TextInputType.emailAddress,
+              TextField(
+                controller: _nameController,
+                focusNode: _nameFocus,
+                decoration: InputDecoration(labelText: "Nome"),
                 onChanged: (text) {
                   _userEdited = true;
-                  _editedContact.email = text;
-                }),
-            TextField(
-                controller: _phoneController,
-                decoration: InputDecoration(labelText: "telefone"),
-                keyboardType: TextInputType.phone,
-                onChanged: (text) {
-                  _userEdited = true;
-                  _editedContact.phone = text;
-                }),
-          ],
+                  setState(() {
+                    text == ""
+                        ? _editedContact.name = "Novo Contato"
+                        : _editedContact.name = text;
+                  });
+                },
+              ),
+              TextField(
+                  controller: _emailController,
+                  decoration: InputDecoration(labelText: "email"),
+                  keyboardType: TextInputType.emailAddress,
+                  onChanged: (text) {
+                    _userEdited = true;
+                    _editedContact.email = text;
+                  }),
+              TextField(
+                  controller: _phoneController,
+                  decoration: InputDecoration(labelText: "telefone"),
+                  keyboardType: TextInputType.phone,
+                  onChanged: (text) {
+                    _userEdited = true;
+                    _editedContact.phone = text;
+                  }),
+            ],
+          ),
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            if (_editedContact.name != null && _editedContact.name.isNotEmpty) {
+              Navigator.pop(context, _editedContact);
+            } else {
+              FocusScope.of(context).requestFocus(_nameFocus);
+            }
+          },
+          child: Icon(Icons.save),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        child: Icon(Icons.save),
-      ),
     );
+  }
+
+  Future<bool> _requestPop() {
+    if (_userEdited) {
+      showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: Text("Descartar alteações?"),
+              content: Text("Ao sair, as informações alteradas serão perdidas"),
+              actions: [
+                TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: Text("cancelar")),
+                TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      Navigator.pop(context);
+                    },
+                    child: Text("sim"))
+              ],
+            );
+          });
+      return Future.value(false);
+    } else {
+      return Future.value(true);
+    }
   }
 }
